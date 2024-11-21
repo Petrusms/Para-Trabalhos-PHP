@@ -7,7 +7,7 @@ require_once("modelo/Revista.php");
 require_once("modelo/Pessoa.php");
 
 $pessoas = [
-    new Pessoa("Jorge", "24/10/1998", "800.546.121-00", "(45) 99999-9999", "@jorge24"),
+    new Pessoa("Jorge", "24/10/1998", "8", "(45) 99999-9999", "@jorge24"),
     new Pessoa("Maria", "04/01/2000", "800.547.120-00", "(45) 99999-9990", "@maria04"),
     new Pessoa("João", "03/09/2002", "800.549.119-00", "(45) 99999-9900", "@joAo03"),
     new Pessoa("Lucas", "13/11/2005", "800.846.118-00", "(45) 99999-9000", "@Lucas13"),
@@ -497,7 +497,7 @@ while(true){
                 while($stop){
                     print("╔═════════════════════════════ ADIMINISTRADOR ════════════════════════════╗\n");
                     print("║   Olá, seja bem vindo a função de ADM, escolha uma das opcões abaixo:   ║\n");
-                    print("║                                1: Listar nomes                          ║\n");
+                    print("║                                1: Listar dados                          ║\n");
                     print("║                                2: excluir                               ║\n");
                     print("║                                3: Mostrar biblioteca especifica         ║\n");
                     print("║                                4: Mostrar todos as bibliotecas          ║\n");
@@ -569,146 +569,134 @@ while(true){
                                 $CPF = readline("Informe o CPF: ");
                                 $senha = readline("Informe a senha: ");
 
-                                print("╔══════════════════════════════════════════════════════════════════════════════╗\n");
-                                print("║                         ADIMINISTRADOR - MENU PRINCIPAL                      ║\n");
-                                print("╠══════════════════════════════════════════════════════════════════════════════╣\n");
-                                print("║   Olá, escolha uma das opções abaixo:                                        ║\n");
-                                print("║                                                                              ║\n");
-                                print("║                                1: Ver todos os materiais de leitura          ║\n");
-                                print("║                                2: Ver material específico                    ║\n");
-                                print("║                                3: Ver doações                                ║\n");
-                                print("║                                4: Ver empréstimos                            ║\n");
-                                print("║                                0: Sair                                       ║\n");
-                                print("╚══════════════════════════════════════════════════════════════════════════════╝\n");
-                            
-                                $opcao = readline("");
-                                    switch($opcao){
-                                        case 1:
-                                            foreach ($pessoas as $index => $dado){
-                                                if ($dado->getNome() === $nome && $dado->getCpf() === $CPF && $dado->getSenha() === $senha){
-                                                    $dado->listar();
-                                                    break;
-                                                }
-                                            }
-                                            break;
-                                            print("╔═══════════════════ !!! ═══════════════════╗\n");
-                                            print("║ Desculpe, mas os valores foram invalidos! ║\n");
-                                            print("╚═══════════════════════════════════════════╝\n");
-                                            break;
-                                        
-                                        case 2:
-                                            print("╔═════════════════════════════ MATERIAL ESPECÍFICO ═════════════════════════════╗\n");
-                                            print("║                         Escolha uma das opcões abaixo:                        ║\n");
-                                            print("║                                  1: Livro                                     ║\n");
-                                            print("║                                  2: Gibi                                      ║\n");
-                                            print("║                                  3: Revista                                   ║\n");
-                                            print("╚═══════════════════════════════════════════════════════════════════════════════╝\n");
-
-                                            $opcao = readline("");
-                                            switch($opcao){
-                                                case 1:
-                                                    $temML = false;
-                                            
-                                                    foreach ($pessoas as $index => $dado){
-                                                        if ($dado->getNome() === $nome && $dado->getCpf() === $CPF && $dado->getSenha() === $senha){
-                                                            if (empty($dado->biblioteca)) {
-                                                                print("Nenhum material de leitura cadastrado.\n");
-                                                                break;
-                                                            }
-                                                            if ($dado instanceof Livro) {
-                                                                if (!$temML) {
-                                                                    print("═════════════════════════ LIVRO ═══════════════════════\n");
-                                                                    $temML = true;
-                                                                }
-                                                                print("Título: ".$dado->getTitulo()." | Autor: ".$dado->getAutor()->getNome()." | Gênero: ".$dado->getCategoria()."\n");
-                                                            } 
-                                                        }
+                                $stop = true;
+                                while($stop){
+                                    print("╔══════════════════════════════════════════════════════════════════════════════╗\n");
+                                    print("║                         ADIMINISTRADOR - MENU PRINCIPAL                      ║\n");
+                                    print("╠══════════════════════════════════════════════════════════════════════════════╣\n");
+                                    print("║   Olá, escolha uma das opções abaixo:                                        ║\n");
+                                    print("║                                                                              ║\n");
+                                    print("║                                1: Ver todos os materiais de leitura          ║\n");
+                                    print("║                                2: Ver material específico                    ║\n");
+                                    print("║                                3: Ver doações                                ║\n");
+                                    print("║                                4: Ver empréstimos                            ║\n");
+                                    print("║                                0: Sair                                       ║\n");
+                                    print("╚══════════════════════════════════════════════════════════════════════════════╝\n");
+                                
+                                    $opcao = readline("");
+                                        switch($opcao){
+                                            case 1:
+                                                foreach ($pessoas as $index => $dado){
+                                                    if ($dado->getNome() === $nome && $dado->getCpf() === $CPF && $dado->getSenha() === $senha){
+                                                        $dado->listar();
+                                                        $encontrado = true;
                                                     }
-                                                    break;
-                                                case 2:
-                                                    $temML = false;
+                                                }
+                                                break;
+                                            
+                                            case 2:
+                                                print("╔═════════════════════════════ MATERIAL ESPECÍFICO ═════════════════════════════╗\n");
+                                                print("║                         Escolha uma das opcões abaixo:                        ║\n");
+                                                print("║                                  1: Livro                                     ║\n");
+                                                print("║                                  2: Gibi                                      ║\n");
+                                                print("║                                  3: Revista                                   ║\n");
+                                                print("╚═══════════════════════════════════════════════════════════════════════════════╝\n");
 
-                                                    foreach ($pessoas as $index => $dado){
-                                                        if ($dado->getNome() === $nome && $dado->getCpf() === $CPF && $dado->getSenha() === $senha){
-                                                            if (empty($pessoa->biblioteca)) {
-                                                                print("Nenhum material de leitura cadastrado.\n");
-                                                                break;
-                                                            }
-
-                                                            foreach ($pessoa->biblioteca as $ML) {
-                                                                if ($ML instanceof Revista) {
+                                                $opcao1 = readline("");
+                                                switch($opcao1){
+                                                    case 1:
+                                                        $temML = false;
+                                                
+                                                        foreach ($pessoas as $index => $dado){
+                                                            if ($dado->getNome() === $nome && $dado->getCpf() === $CPF && $dado->getSenha() === $senha){
+                                                                if ($dado instanceof Livro) {
                                                                     if (!$temML) {
-                                                                        print("═════════════════════════ REVISTA ═══════════════════════\n");
+                                                                        print("═════════════════════════ LIVRO ═══════════════════════\n");
                                                                         $temML = true;
                                                                     }
-                                                                    print("Título: " . $ML->getTitulo() . " | Número de edição: " . $ML->getNumEdicao()." | Editora: ".$ML->getEditora()." | Gênero: ".$ML->getCategoria()."\n");
+                                                                    print("Título: ".$dado->getTitulo()." | Autor: ".$dado->getAutor()->getNome()." | Gênero: ".$dado->getCategoria()."\n");
                                                                 } 
                                                             }
                                                         }
-                                                    }
-                                                    break;
-                                                case 3:
-                                                    $temML = false;
-                                                    
-                                                    foreach ($pessoas as $index => $dado){
-                                                        if ($dado->getNome() === $nome && $dado->getCpf() === $CPF && $dado->getSenha() === $senha){
-                                                            if (empty($pessoa->biblioteca)) {
-                                                                print("Nenhum material de leitura cadastrado.\n");
-                                                                break;
-                                                            }
+                                                        break;
+                                                    case 2:
+                                                        $temML = false;
 
-                                                            foreach ($pessoa->biblioteca as $ML) {
-                                                                if ($ML instanceof Gibi) {
-                                                                    if (!$temML) {
-                                                                        print("═════════════════════════ GIBI ═══════════════════════\n");
-                                                                        $temML = true;
-                                                                    }
-                                                                    print("Título: " . $ML->getTitulo() . " | Número de edição: " . $ML->getNumEdicao() . " | Gênero: ".$ML->getCategoria()."\n");
+                                                        foreach ($pessoas as $index => $dado){
+                                                            if ($dado->getNome() === $nome && $dado->getCpf() === $CPF && $dado->getSenha() === $senha){
+                                                                if (empty($pessoa->biblioteca)) {
+                                                                    print("Nenhuma revista cadastrada.\n");
+                                                                    break;
+                                                                }
+
+                                                                foreach ($pessoa->biblioteca as $ML) {
+                                                                    if ($ML instanceof Revista) {
+                                                                        if (!$temML) {
+                                                                            print("═════════════════════════ REVISTA ═══════════════════════\n");
+                                                                            $temML = true;
+                                                                        }
+                                                                        print("Título: " . $ML->getTitulo() . " | Número de edição: " . $ML->getNumEdicao()." | Editora: ".$ML->getEditora()." | Gênero: ".$ML->getCategoria()."\n");
+                                                                    } 
                                                                 }
                                                             }
                                                         }
-                                                    }
-                                                    break;
+                                                        break;
+                                                    case 3:
+                                                        $temML = false;
+                                                        
+                                                        foreach ($pessoas as $index => $dado){
+                                                            if ($dado->getNome() === $nome && $dado->getCpf() === $CPF && $dado->getSenha() === $senha){
+                                                                if (empty($pessoa->biblioteca)) {
+                                                                    print("Nenhum gibi cadastrado.\n");
+                                                                    break;
+                                                                }
 
-                                            }
-                                            break;
-                                            
-                                        case 3:
-                                            foreach ($pessoas as $index => $dado){
-                                                if ($dado->getNome() === $nome && $dado->getCpf() === $CPF && $dado->getSenha() === $senha){
-                                                    $dado->listarDoacao();
-                                                    break;
+                                                                foreach ($pessoa->biblioteca as $ML) {
+                                                                    if ($ML instanceof Gibi) {
+                                                                        if (!$temML) {
+                                                                            print("═════════════════════════ GIBI ═══════════════════════\n");
+                                                                            $temML = true;
+                                                                        }
+                                                                        print("Título: " . $ML->getTitulo() . " | Número de edição: " . $ML->getNumEdicao() . " | Gênero: ".$ML->getCategoria()."\n");
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                        break;
+
                                                 }
-                                            }
-                                            print("╔═══════════════════ !!! ═══════════════════╗\n");
-                                            print("║ Desculpe, mas os valores foram invalidos! ║\n");
-                                            print("╚═══════════════════════════════════════════╝\n");
-                                            break;
-
-                                        case 4:
-                                            foreach ($pessoas as $index => $dado){
-                                                if ($dado->getNome() === $nome && $dado->getCpf() === $CPF && $dado->getSenha() === $senha){
-                                                    $dado->listarEmprestimo();
-                                                    break;
-                                                }
-                                            }
-                                            print("╔═══════════════════ !!! ═══════════════════╗\n");
-                                            print("║ Desculpe, mas os valores foram invalidos! ║\n");
-                                            print("╚═══════════════════════════════════════════╝\n");
-                                            break;
-
-                                        case 0:
-                                            print("╔═════════════════════════╗\n");
-                                            print("║ Saindo da função ADM... ║\n");
-                                            print("╚═════════════════════════╝\n");
-                                            break;     
+                                                break;
                                                 
-                                        default: 
-                                            print("╔═══════════════ !!! ═══════════════╗\n");
-                                            print("║ Desculpe, mas a opção é invalida! ║\n");
-                                            print("╚═══════════════════════════════════╝\n");
-                                    }
-                                break;
+                                            case 3:
+                                                foreach ($pessoas as $index => $dado){
+                                                    if ($dado->getNome() === $nome && $dado->getCpf() === $CPF && $dado->getSenha() === $senha){
+                                                        $dado->listarDoacao();
+                                                    }
+                                                }
+                                                break;
+
+                                            case 4:
+                                                foreach ($pessoas as $index => $dado){
+                                                    if ($dado->getNome() === $nome && $dado->getCpf() === $CPF && $dado->getSenha() === $senha){
+                                                        $dado->listarEmprestimo();
+                                                    }
+                                                }
+                                                break;
+
+                                            case 0:
+                                                print("╔═════════════════════════╗\n");
+                                                print("║ Saindo da função ADM... ║\n");
+                                                print("╚═════════════════════════╝\n");
+                                                $stop = false;
+                                                break;     
+                                                    
+                                            default: 
+                                                print("╔═══════════════ !!! ═══════════════╗\n");
+                                                print("║ Desculpe, mas a opção é invalida! ║\n");
+                                                print("╚═══════════════════════════════════╝\n");
+                                        }
+                                }
+                                    break;
 
                             case 4:
                                 foreach ($pessoas as $index => $dado){

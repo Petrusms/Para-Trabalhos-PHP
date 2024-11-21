@@ -285,19 +285,20 @@ function biblioteca($pessoa){
                     case 1:
                         $titulo = readline("Qual o titulo do livro?");
                         $autor = readline("Qual o nome do autor desse livro?");
-                        $pessoa->excluir($titulo, $autor);
+                        $pessoa->excluir($titulo, $autor, null);
                         break;
 
                     case 2:
                         $titulo = readline("Qual o titulo do gibi?");
                         $numEdicao = readline("Qual o número de edição desse gibi?");
-                        $pessoa->excluir( $titulo, $numEdicao);
+                        $pessoa->excluir( $titulo, $numEdicao, null);
                         break;
 
                     case 3:
                         $titulo = readline("Qual o titulo da revista?");
                         $numEdicao = readline("Qual o número de edição dessa revista?");
-                        $pessoa->excluir( $titulo, $numEdicao);
+                        $editora = readline("Qual a editora dessa revista?");
+                        $pessoa->excluir( $titulo, $numEdicao, $editora);
                         break;
 
                     default: 
@@ -307,12 +308,80 @@ function biblioteca($pessoa){
                 }
 
             case 5:
-                //$pessoa->emprestar();
-                break;
+                print("╔══════════════════════════ EMPRESTAR ══════════════════════╗\n");
+                print("║  Qual o tipo do material de leitura que será emprestado:  ║\n");
+                print("║                                                           ║\n");
+                print("║                         1: Livro                          ║\n");
+                print("║                         2: Gibi                           ║\n");
+                print("║                         3: Revista                        ║\n");
+                print("╚═══════════════════════════════════════════════════════════╝\n");
+                $opcao = readline("");
+                switch($opcao){
+                    case 1:
+                        $titulo = readline("Qual o titulo do livro?");
+                        $autor = readline("Qual o nome do autor desse livro?");
+                        $pessoaDestino = readline("Para qual pessoa deseja/ira emprestar esse livro?");
+                        $pessoa->emprestar($titulo, $autor, null,$pessoaDestino);
+                        break;
+
+                    case 2:
+                        $titulo = readline("Qual o titulo do gibi?");
+                        $numEdicao = readline("Qual o número de edição desse gibi?");
+                        $pessoaDestino = readline("Para qual pessoa deseja/ira emprestar esse gibi?");
+                        $pessoa->emprestar($titulo, $numEdicao, null,$pessoaDestino);
+                        break;
+
+                    case 3:
+                        $titulo = readline("Qual o titulo da revista?");
+                        $numEdicao = readline("Qual o número de edição dessa revista?");
+                        $editora = readline("Qual a editora dessa revista?");
+                        $pessoaDestino = readline("Para qual pessoa deseja/ira emprestar essa revista?");
+                        $pessoa->emprestar($titulo, $numEdicao, $editora,$pessoaDestino);
+                        break;
+
+                    default: 
+                        print("╔════════════════!!!════════════════╗\n");
+                        print("║ Desculpe, mas a opção é invalida! ║\n");
+                        print("╚═══════════════════════════════════╝\n");
+                }
 
             case 6:
-                //$pessoa->doar();
-                break;
+                print("╔═════════════════════════ Doar ═════════════════════╗\n");
+                print("║ Qual o tipo do material de leitura que será doado: ║\n");
+                print("║                                                    ║\n");
+                print("║                      1: Livro                      ║\n");
+                print("║                      2: Gibi                       ║\n");
+                print("║                      3: Revista                    ║\n");
+                print("╚════════════════════════════════════════════════════╝\n");
+                $opcao = readline("");
+                switch($opcao){
+                    case 1:
+                        $titulo = readline("Qual o titulo do livro?");
+                        $autor = readline("Qual o nome do autor desse livro?");
+                        $instituicaoPessoaDestino = readline("Para qual pessoa deseja doar esse livro?");
+                        $pessoa->doar($titulo, $autor, null, $instituicaoPessoaDestino);
+                        break;
+
+                    case 2:
+                        $titulo = readline("Qual o titulo do gibi?");
+                        $numEdicao = readline("Qual o número de edição desse gibi?");
+                        $instituicaoPessoaDestino = readline("Para qual pessoa/instituição deseja doar esse gibi?");
+                        $pessoa->doar($titulo, $numEdicao, null, $instituicaoPessoaDestino);
+                        break;
+
+                    case 3:
+                        $titulo = readline("Qual o titulo da revista?");
+                        $numEdicao = readline("Qual o número de edição dessa revista?");
+                        $editora = readline("Qual a editora dessa revista?");
+                        $instituicaoPessoaDestino = readline("Para qual pessoa deseja doar essa revista?");
+                        $pessoa->doar($titulo, $numEdicao, $editora, $instituicaoPessoaDestino);
+                        break;
+
+                    default: 
+                        print("╔════════════════!!!════════════════╗\n");
+                        print("║ Desculpe, mas a opção é invalida! ║\n");
+                        print("╚═══════════════════════════════════╝\n");
+                }
 
             case 0:
                 print("╔═════════════════════════╗\n");

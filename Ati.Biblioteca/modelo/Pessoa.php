@@ -7,6 +7,8 @@ class Pessoa implements IBiblioteca{
     private string $telefone;
     private string $senha;
     private array $biblioteca = [];
+    private array $emprestimo = [];
+    private array $doacao = [];
 
     public function adicionar($ML) {
         $this->biblioteca[] = $ML;
@@ -26,7 +28,7 @@ class Pessoa implements IBiblioteca{
                     print("═════════════════════════ LIVRO ═══════════════════════\n");
                     $temML = true;
                 }
-                print("Título: " . $ML->getTitulo() . ", Autor: " . $ML->getAutor()->getNome() . "\n");
+                print("Título: ".$ML->getTitulo()." | Autor: ".$ML->getAutor()->getNome()." | Gênero: ".$ML->getCategoria()."\n");
             } 
         }
 
@@ -38,7 +40,7 @@ class Pessoa implements IBiblioteca{
                     print("═════════════════════════ REVISTA ═══════════════════════\n");
                     $temML = true;
                 }
-                print("Título: " . $ML->getTitulo() . ", Número de edição: " . $ML->getNumEdicao() . ", Editora: ".$ML->getEditora()."\n");
+                print("Título: " . $ML->getTitulo() . " | Número de edição: " . $ML->getNumEdicao()." | Editora: ".$ML->getEditora()." | Gênero: ".$ML->getCategoria()."\n");
             } 
         }
         $temML = false;
@@ -49,12 +51,12 @@ class Pessoa implements IBiblioteca{
                     print("═════════════════════════ GIBI ═══════════════════════\n");
                     $temML = true;
                 }
-                print("Título: " . $ML->getTitulo() . ", Número de edição: " . $ML->getNumEdicao() . "\n");
+                print("Título: " . $ML->getTitulo() . " | Número de edição: " . $ML->getNumEdicao() . " | Gênero: ".$ML->getCategoria()."\n");
             }
         }
     }
 
-    public function excluir($titulo, $autorNumEdicao){
+    public function excluir($titulo, $autorNumEdicao, $editora){
         if (empty($this->biblioteca)) {
             print("Nenhum material de leitura cadastrado para ser excluído.\n");
             return;
@@ -63,60 +65,107 @@ class Pessoa implements IBiblioteca{
         foreach ($this->biblioteca as $key => $ML) {
             if ($ML instanceof Livro) {
                 if ($ML->getTitulo() == $titulo && $ML->getAutor() == $autorNumEdicao) {
-                    unset($this->livros[$key]);
-                    print("Livro ".$titulo." foi excluído com sucesso.\n");
-                    return;
+                    array_splice($this->biblioteca, $key, 1);
+                    print("O livro ".$titulo." foi excluído com sucesso.\n");
+                    return $this->biblioteca;
                 }
             }
             if ($ML instanceof Gibi) {
                 if ($ML->getTitulo() == $titulo && $ML->getNumEdicao() == $autorNumEdicao) {
-                    unset($this->livros[$key]);
-                    print("Livro ".$titulo." foi excluído com sucesso.\n");
-                    return;
+                    array_splice($this->biblioteca, $key, 1);
+                    print("O gibi ".$titulo." foi excluído com sucesso.\n");
+                    return $this->biblioteca;
                 }
             }
             if ($ML instanceof Revista) {
-                if ($ML->getTitulo() == $titulo && $ML->getNumEdicao() == $autorNumEdicao) {
-                    unset($this->livros[$key]);
-                    print("Livro ".$titulo." foi excluído com sucesso.\n");
-                    return;
+                if ($ML->getTitulo() == $titulo && $ML->getNumEdicao() == $autorNumEdicao && $ML->getEditora() == $editora) {
+                    array_splice($this->biblioteca, $key, 1);
+                    print("A revista ".$titulo." foi excluído com sucesso.\n");
+                    return $this->biblioteca;
                 }
             }
         }
         print($titulo." não encontrado.\n");
     }
 
-    public function emprestar($titulo, $pessoaDestino) {
+    public function emprestar($titulo, $autorNumEdicao, $editora,$pessoaDestino) {
         if (empty($this->biblioteca)) {
             print("Nenhum material de leitura cadastrado para ser emprestado.\n");
             return;
         }
 
+        $materialEncontrado = false;
+            
+        $this->excluir($titulo, $autorNumEdicao, $editora);
         foreach ($this->biblioteca as $key => $ML) {
-            if ($ML->getTitulo() == $titulo) {
-                $pessoaDestino->adicionar($ML);
-                unset($this->biblioteca[$key]); // Remove o material da biblioteca original
-                print("Material '{$titulo}' emprestado com sucesso para ".$pessoaDestino->getNome().".\n");
-                return;
+            if ($ML instanceof Livro) {
+                if ($ML->getTitulo() == $titulo && $ML->getAutor() == $autorNumEdicao) {
+                    print("O livro ".$titulo." do autor ".$autorNumEdicao." foi emprestado para ".$pessoaDestino." com sucesso.\n");
+                    $emprestimo[] = $this->biblioteca[$key];
+                    $materialEncontrado = true;
+                    return;
+                }
+            }
+            if ($ML instanceof Gibi) {
+                if ($ML->getTitulo() == $titulo && $ML->getNumEdicao() == $autorNumEdicao) {
+                    print("O gibi ".$titulo." da edição ".$autorNumEdicao." foi emprestado para ".$pessoaDestino." com sucesso.\n");
+                    $emprestimo[] = $this->biblioteca[$key];
+                    $materialEncontrado = true;
+                    return;
+                }
+            }
+            if ($ML instanceof Revista) {
+                if ($ML->getTitulo() == $titulo && $ML->getNumEdicao() == $autorNumEdicao && $ML->getEditora() == $editora) {
+                    print("A revista ".$titulo." da editora ".$editora." foi emprestado para ".$pessoaDestino." com sucesso.\n");
+                    $emprestimo[] = $this->biblioteca[$key];
+                    $materialEncontrado = true;
+                    return;
+                }
             }
         }
-        print("Material ".$titulo." não encontrado na sua biblioteca.\n");
+        if (!$materialEncontrado) {
+            print("Material " . $titulo . " não encontrado na sua biblioteca.\n");
+        }
     }
 
-    public function doar($titulo, $autor) {
+    public function doar($titulo, $autorNumEdicao, $editora, $instituicaoPessoaDestino) {
         if (empty($this->biblioteca)) {
             print("Nenhum material de leitura cadastrado para ser doado.\n");
             return;
         }
 
+        $materialEncontrado = false;
+            
+        $this->excluir($titulo, $autorNumEdicao, $editora);
         foreach ($this->biblioteca as $key => $ML) {
-            if ($ML->getTitulo() == $titulo) {
-                unset($this->biblioteca[$key]); // Remove o material da biblioteca
-                print("Material ".$titulo." doado com sucesso.\n");
-                return;
+            if ($ML instanceof Livro) {
+                if ($ML->getTitulo() == $titulo && $ML->getAutor() == $autorNumEdicao) {
+                    $doacao[] = $this->biblioteca[$key];
+                    print("O livro ".$titulo." do autor ".$autorNumEdicao." foi doado para ".$instituicaoPessoaDestino." com sucesso.\n");
+                    $materialEncontrado = true;
+                    return;
+                }
+            }
+            if ($ML instanceof Gibi) {
+                if ($ML->getTitulo() == $titulo && $ML->getNumEdicao() == $autorNumEdicao) {
+                    $doacao[] = $this->biblioteca[$key];
+                    print("O gibi ".$titulo." da edição ".$autorNumEdicao." foi doado para ".$instituicaoPessoaDestino." com sucesso.\n");
+                    $materialEncontrado = true;
+                    return;
+                }
+            }
+            if ($ML instanceof Revista) {
+                if ($ML->getTitulo() == $titulo && $ML->getNumEdicao() == $autorNumEdicao && $ML->getEditora() == $editora) {
+                    $doacao[] = $this->biblioteca[$key];
+                    print("A revista ".$titulo." da editora ".$editora." foi doado para ".$instituicaoPessoaDestino." com sucesso.\n");
+                    $materialEncontrado = true;
+                    return;
+                }
             }
         }
-        print("Material '{$titulo}' não encontrado na sua biblioteca.\n");
+        if (!$materialEncontrado) {
+            print("Material " . $titulo . " não encontrado na sua biblioteca.\n");
+        }
     }
 
     public function __construct($a,$b,$c,$d,$e) {

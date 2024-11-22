@@ -190,12 +190,12 @@ $pessoas[3]->adicionar($ML14);
 $pessoas[3]->adicionar($ML7);
 
 //Biblioteca do Pedro exemplo
-$pessoas[4]->adicionar($ML1);
-$pessoas[4]->adicionar($ML3);
-$pessoas[4]->adicionar($ML5);
 $pessoas[4]->adicionar($ML11);
-$pessoas[4]->adicionar($ML9);
-$pessoas[4]->adicionar($ML7);
+$pessoas[4]->adicionar($ML12);
+$pessoas[4]->adicionar($ML13);
+$pessoas[4]->adicionar($ML14);
+$pessoas[4]->adicionar($ML15);
+$pessoas[4]->adicionar($ML1);
 
 function biblioteca($pessoa){
     while(true){
@@ -270,8 +270,33 @@ function biblioteca($pessoa){
                     }
                     break;
             case 3:
-                $pessoa->listar();
+                print("╔══════════════════════════════════════════════════════════════════════════════╗\n");
+                print("║                                LISTAR MATERIAL                               ║\n");
+                print("╠══════════════════════════════════════════════════════════════════════════════╣\n");
+                print("║                         Escolha uma das opções abaixo:                       ║\n");
+                print("║                                                                              ║\n");
+                print("║                                 1: Listar tudo                               ║\n");
+                print("║                                 2: Listar empréstimos                        ║\n");
+                print("║                                 3: Listar doações                            ║\n");
+                print("╚══════════════════════════════════════════════════════════════════════════════╝\n");
+                $opcao = readline("");
+                switch($opcao){
+                    case 1:
+                        $pessoa->listar();
+                        break;
+                    case 2:
+                        $pessoa->listarEmprestimo();
+                        break;
+                    case 3:
+                        $pessoa->listarDoacao();
+                        break;
+                    default: 
+                        print("╔════════════════!!!════════════════╗\n");
+                        print("║ Desculpe, mas a opção é invalida! ║\n");
+                        print("╚═══════════════════════════════════╝\n");
+                }
                 break;
+    
             case 4:
                 print("╔═════════════════════════ EXCLUIR ═════════════════════╗\n");
                 print("║ Qual o tipo do material de leitura que será excluido: ║\n");
@@ -363,7 +388,7 @@ function biblioteca($pessoa){
                     case 1:
                         $titulo = readline("Qual o titulo do livro?");
                         $autor = readline("Qual o nome do autor desse livro?");
-                        $instituicaoPessoaDestino = readline("Para qual pessoa deseja doar esse livro?");
+                        $instituicaoPessoaDestino = readline("Para qual pessoa/instituição deseja doar esse livro?");
                         $pessoa->doar($titulo, $autor, null, $instituicaoPessoaDestino);
                         break;
 
@@ -378,7 +403,7 @@ function biblioteca($pessoa){
                         $titulo = readline("Qual o titulo da revista?");
                         $numEdicao = readline("Qual o número de edição dessa revista?");
                         $editora = readline("Qual a editora dessa revista?");
-                        $instituicaoPessoaDestino = readline("Para qual pessoa deseja doar essa revista?");
+                        $instituicaoPessoaDestino = readline("Para qual pessoa/instituição deseja doar essa revista?");
                         $pessoa->doar($titulo, $numEdicao, $editora, $instituicaoPessoaDestino);
                         break;
 
@@ -414,7 +439,7 @@ while(true){
     $opcao = readline("");
     switch($opcao){
         case 1:
-            print("═════════════════ CADASTRO ═════════════════\n");
+            print("══════════════════════════════════ CADASTRO ══════════════════════════════════\n");
             $nome = readline("Para cadastrar informe seu nome: ");
             $cpf = readline("Agora informe seu CPF: ");
             $dataNascimento = readline("Agora informe sua data de nascimento: ");
@@ -442,7 +467,7 @@ while(true){
             break;
 
         case 2:
-            print("═════════════════ LOGIN ═════════════════\n");
+            print("══════════════════════════════════ LOGIN ══════════════════════════════════\n");
 
             $para = true;
             while($para){
@@ -603,67 +628,77 @@ while(true){
                                                 print("╚═══════════════════════════════════════════════════════════════════════════════╝\n");
 
                                                 $opcao1 = readline("");
-                                                switch($opcao1){
+                                                switch($opcao1) {
                                                     case 1:
                                                         $temML = false;
-                                                
-                                                        foreach ($pessoas as $index => $dado){
-                                                            if ($dado->getNome() === $nome && $dado->getCpf() === $CPF && $dado->getSenha() === $senha){
-                                                                if ($dado instanceof Livro) {
-                                                                    if (!$temML) {
-                                                                        print("═════════════════════════ LIVRO ═══════════════════════\n");
-                                                                        $temML = true;
+
+                                                        foreach ($pessoas as $dado) {
+                                                            if ($dado->getNome() === $nome && $dado->getCpf() === $CPF && $dado->getSenha() === $senha) {
+                                                                foreach ($dado->getBiblioteca() as $ML) {
+                                                                    if ($ML instanceof Livro) {
+                                                                        if (!$temML) {
+                                                                            print("═════════════════════════ LIVRO ═══════════════════════\n");
+                                                                            $temML = true;
+                                                                        }
+                                                                        print("Título: " . $ML->getTitulo() . " | Autor: " . $ML->getAutor()->getNome() . " | Gênero: " . $ML->getCategoria() . "\n");
                                                                     }
-                                                                    print("Título: ".$dado->getTitulo()." | Autor: ".$dado->getAutor()->getNome()." | Gênero: ".$dado->getCategoria()."\n");
-                                                                } 
+                                                                }
+                                                                if (!$temML) {
+                                                                    print("Nenhum livro cadastrado.\n");
+                                                                }
+                                                                break;
                                                             }
                                                         }
                                                         break;
+
                                                     case 2:
                                                         $temML = false;
 
-                                                        foreach ($pessoas as $index => $dado){
-                                                            if ($dado->getNome() === $nome && $dado->getCpf() === $CPF && $dado->getSenha() === $senha){
-                                                                if (empty($pessoa->biblioteca)) {
-                                                                    print("Nenhuma revista cadastrada.\n");
-                                                                    break;
-                                                                }
-
-                                                                foreach ($pessoa->biblioteca as $ML) {
-                                                                    if ($ML instanceof Revista) {
-                                                                        if (!$temML) {
-                                                                            print("═════════════════════════ REVISTA ═══════════════════════\n");
-                                                                            $temML = true;
-                                                                        }
-                                                                        print("Título: " . $ML->getTitulo() . " | Número de edição: " . $ML->getNumEdicao()." | Editora: ".$ML->getEditora()." | Gênero: ".$ML->getCategoria()."\n");
-                                                                    } 
-                                                                }
-                                                            }
-                                                        }
-                                                        break;
-                                                    case 3:
-                                                        $temML = false;
-                                                        
-                                                        foreach ($pessoas as $index => $dado){
-                                                            if ($dado->getNome() === $nome && $dado->getCpf() === $CPF && $dado->getSenha() === $senha){
-                                                                if (empty($pessoa->biblioteca)) {
-                                                                    print("Nenhum gibi cadastrado.\n");
-                                                                    break;
-                                                                }
-
-                                                                foreach ($pessoa->biblioteca as $ML) {
+                                                        foreach ($pessoas as $dado) {
+                                                            if ($dado->getNome() === $nome && $dado->getCpf() === $CPF && $dado->getSenha() === $senha) {
+                                                                foreach ($dado->getBiblioteca() as $ML) {
                                                                     if ($ML instanceof Gibi) {
                                                                         if (!$temML) {
-                                                                            print("═════════════════════════ GIBI ═══════════════════════\n");
+                                                                            print("══════════════════════════════════════════ GIBI ════════════════════════════════════════\n");
                                                                             $temML = true;
                                                                         }
-                                                                        print("Título: " . $ML->getTitulo() . " | Número de edição: " . $ML->getNumEdicao() . " | Gênero: ".$ML->getCategoria()."\n");
+                                                                        print("Título: " . $ML->getTitulo() . " | Número de edição: " . $ML->getNumEdicao() . " | Gênero: " . $ML->getCategoria() . "\n");
                                                                     }
                                                                 }
+                                                                if (!$temML) {
+                                                                    print("Nenhum gibi cadastrado.\n");
+                                                                }
+                                                                break;
                                                             }
                                                         }
                                                         break;
 
+                                                    case 3:
+                                                        $temML = false;
+
+                                                        foreach ($pessoas as $dado) {
+                                                            if ($dado->getNome() === $nome && $dado->getCpf() === $CPF && $dado->getSenha() === $senha) {
+                                                                foreach ($dado->getBiblioteca() as $ML) {
+                                                                    if ($ML instanceof Revista) {
+                                                                        if (!$temML) {
+                                                                            print("══════════════════════════════════════════ REVISTA ════════════════════════════════════════\n");
+                                                                            $temML = true;
+                                                                        }
+                                                                        print("Título: " . $ML->getTitulo() . " | Número de edição: " . $ML->getNumEdicao() . " | Editora: " . $ML->getEditora() . " | Gênero: " . $ML->getCategoria() . "\n");
+                                                                    }
+                                                                }
+                                                                if (!$temML) {
+                                                                    print("Nenhuma revista cadastrada.\n");
+                                                                }
+                                                                break;
+                                                            }
+                                                        }
+                                                        break;
+
+                                                    default: 
+                                                        print("╔═══════════════ !!! ═══════════════╗\n");
+                                                        print("║ Desculpe, mas a opção é invalida! ║\n");
+                                                        print("╚═══════════════════════════════════╝\n");
                                                 }
                                                 break;
                                                 
@@ -702,7 +737,7 @@ while(true){
                                 foreach ($pessoas as $index => $dado){
                                     print($dado->getNome()."\n");
                                     $dado->listar();
-                                    print("══════════════════════════════════════════════════════\n");
+                                    print("════════════════════════════════════════════════════════════════════════════════════════\n");
                                     print("\n");
                                 }
                                 break;

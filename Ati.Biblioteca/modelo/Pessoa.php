@@ -1,3 +1,4 @@
+
 <?php
 require_once("IBiblioteca.php");
 class Pessoa implements IBiblioteca{
@@ -25,7 +26,7 @@ class Pessoa implements IBiblioteca{
         foreach ($this->biblioteca as $ML) {
             if ($ML instanceof Livro) {
                 if (!$temML) {
-                    print("═════════════════════════ LIVRO ═══════════════════════\n");
+                    print("════════════════════════════════════════════════ LIVRO ══════════════════════════════════════════════\n");
                     $temML = true;
                 }
                 print("Título: ".$ML->getTitulo()." | Autor: ".$ML->getAutor()->getNome()." | Gênero: ".$ML->getCategoria()."\n");
@@ -37,7 +38,7 @@ class Pessoa implements IBiblioteca{
         foreach ($this->biblioteca as $ML) {
             if ($ML instanceof Revista) {
                 if (!$temML) {
-                    print("═════════════════════════ REVISTA ═══════════════════════\n");
+                    print("════════════════════════════════════════════════ REVISTA ══════════════════════════════════════════════\n");
                     $temML = true;
                 }
                 print("Título: " . $ML->getTitulo() . " | Número de edição: " . $ML->getNumEdicao()." | Editora: ".$ML->getEditora()." | Gênero: ".$ML->getCategoria()."\n");
@@ -49,7 +50,7 @@ class Pessoa implements IBiblioteca{
         foreach ($this->biblioteca as $ML) {
             if ($ML instanceof Gibi) {
                 if (!$temML) {
-                    print("═════════════════════════ GIBI ═══════════════════════\n");
+                    print("════════════════════════════════════════════════ GIBI ══════════════════════════════════════════════\n");
                     $temML = true;
                 }
                 print("Título: " . $ML->getTitulo() . " | Número de edição: " . $ML->getNumEdicao() . " | Gênero: ".$ML->getCategoria()."\n");
@@ -57,86 +58,114 @@ class Pessoa implements IBiblioteca{
         }
     }
 
-    public function listarEmprestimo(){
+    public function listarEmprestimo() {
         if (empty($this->emprestimo)) {
-            print("Nenhum material de leitura cadastrado.\n");
+            print("Nenhum material de leitura foi emprestado.\n");
             return;
         }
-        
+    
         $temML = false;
-
+    
         foreach ($this->emprestimo as $ML) {
-            if ($ML instanceof Livro) {
+            $material = $ML['material'];
+    
+            if ($material instanceof Livro) {
                 if (!$temML) {
-                    print("═════════════════════════ LIVRO ═══════════════════════\n");
+                    print("════════════════════════════════════════════════ LIVRO ══════════════════════════════════════════════\n");
                     $temML = true;
                 }
-                print("Título: ".$ML->getTitulo()." | Autor: ".$ML->getAutor()->getNome()." | Gênero: ".$ML->getCategoria()."\n");
+                print("O livro " . $material->getTitulo() . " do autor " . $material->getAutor()->getNome() . 
+                    " do gênero: " . $material->getCategoria() . 
+                    " foi emprestado para " . $ML['pessoa'] . "\n");
             } 
         }
-
+    
         $temML = false;
-
+    
         foreach ($this->emprestimo as $ML) {
-            if ($ML instanceof Revista) {
+            $material = $ML['material'];
+    
+            if ($material instanceof Revista) {
                 if (!$temML) {
-                    print("═════════════════════════ REVISTA ═══════════════════════\n");
+                    print("════════════════════════════════════════════════ REVISTA ══════════════════════════════════════════════\n");
                     $temML = true;
                 }
-                print("Título: " . $ML->getTitulo() . " | Número de edição: " . $ML->getNumEdicao()." | Editora: ".$ML->getEditora()." | Gênero: ".$ML->getCategoria()."\n");
+                print("A revista " . $material->getTitulo() . 
+                    " da edição " . $material->getNumEdicao() . 
+                    " do gênero: " . $material->getCategoria() . 
+                    " da editora " . $material->getEditora() . 
+                    " foi emprestada para " . $ML['pessoa'] . "\n");
             } 
         }
+    
         $temML = false;
-
+    
         foreach ($this->emprestimo as $ML) {
-            if ($ML instanceof Gibi) {
+            $material = $ML['material'];
+    
+            if ($material instanceof Gibi) {
                 if (!$temML) {
-                    print("═════════════════════════ GIBI ═══════════════════════\n");
+                    print("════════════════════════════════════════════════ GIBI ══════════════════════════════════════════════\n");
                     $temML = true;
                 }
-                print("Título: " . $ML->getTitulo() . " | Número de edição: " . $ML->getNumEdicao() . " | Gênero: ".$ML->getCategoria()."\n");
+                print("O gibi " . $material->getTitulo() . 
+                    " da edição " . $material->getNumEdicao() . 
+                    " do gênero: " . $material->getCategoria() . 
+                    " foi emprestado para " . $ML['pessoa'] . "\n");
             }
         }
     }
-
     public function listarDoacao(){
         if (empty($this->doacao)) {
-            print("Nenhum material de leitura cadastrado.\n");
+            print("Nenhum material de leitura foi doado.\n");
             return;
         }
         
         $temML = false;
 
         foreach ($this->doacao as $ML) {
-            if ($ML instanceof Livro) {
+            $material = $ML['material'];
+
+            if ($material instanceof Livro) {
                 if (!$temML) {
-                    print("═════════════════════════ LIVRO ═══════════════════════\n");
+                    print("════════════════════════════════════════════════ LIVRO ══════════════════════════════════════════════\n");
                     $temML = true;
                 }
-                print("Título: ".$ML->getTitulo()." | Autor: ".$ML->getAutor()->getNome()." | Gênero: ".$ML->getCategoria()."\n");
+                print("O livro " . $material->getTitulo() . " do autor " . $material->getAutor()->getNome() . 
+                    " do gênero: " . $material->getCategoria() . 
+                    " foi emprestado para " . $ML['destino'] . "\n");
             } 
         }
 
         $temML = false;
 
         foreach ($this->doacao as $ML) {
-            if ($ML instanceof Revista) {
+            $material = $ML['material'];
+            if ($material instanceof Revista) {
                 if (!$temML) {
-                    print("═════════════════════════ REVISTA ═══════════════════════\n");
+                    print("════════════════════════════════════════════════ REVISTA ══════════════════════════════════════════════\n");
                     $temML = true;
                 }
-                print("Título: " . $ML->getTitulo() . " | Número de edição: " . $ML->getNumEdicao()." | Editora: ".$ML->getEditora()." | Gênero: ".$ML->getCategoria()."\n");
+                print("A revista " . $material->getTitulo() . 
+                " da edição " . $material->getNumEdicao() . 
+                " do gênero: " . $material->getCategoria() . 
+                " da editora " . $material->getEditora() . 
+                " foi emprestada para " . $ML['destino'] . "\n");
             } 
         }
         $temML = false;
 
         foreach ($this->doacao as $ML) {
-            if ($ML instanceof Gibi) {
+            $material = $ML['material'];
+            if ($material instanceof Gibi) {
                 if (!$temML) {
-                    print("═════════════════════════ GIBI ═══════════════════════\n");
+                    print("════════════════════════════════════════════════ GIBI ══════════════════════════════════════════════\n");
                     $temML = true;
                 }
-                print("Título: " . $ML->getTitulo() . " | Número de edição: " . $ML->getNumEdicao() . " | Gênero: ".$ML->getCategoria()."\n");
+                print("O gibi " . $material->getTitulo() . 
+                    " da edição " . $material->getNumEdicao() . 
+                    " do gênero: " . $material->getCategoria() . 
+                    " foi emprestado para " . $ML['destino'] . "\n");
             }
         }
     }
@@ -179,7 +208,10 @@ class Pessoa implements IBiblioteca{
         foreach ($this->biblioteca as $key => $ML) {
             if ($ML instanceof Livro) {
                 if ($ML->getTitulo() == $titulo && $ML->getAutor()->getNome() == $autorNumEdicao) {
-                    $this->emprestimo[] = $ML;
+                    $this->emprestimo[] = [
+                        'material' => $ML,
+                        'pessoa' => $pessoaDestino
+                    ];
                     print("O livro ".$titulo." do autor ".$autorNumEdicao . " foi emprestado para ".$pessoaDestino." com sucesso.\n");
                     $this->excluir($titulo, $autorNumEdicao, $editora);
                     return;
@@ -187,7 +219,10 @@ class Pessoa implements IBiblioteca{
             }
             if ($ML instanceof Gibi) {
                 if ($ML->getTitulo() == $titulo && $ML->getNumEdicao() == $autorNumEdicao) {
-                    $this->emprestimo[] = $ML;
+                    $this->emprestimo[] = [
+                        'material' => $ML,
+                        'pessoa' => $pessoaDestino
+                    ];
                     print("O gibi ".$titulo." da edição " . $autorNumEdicao . " foi emprestado para ".$pessoaDestino." com sucesso.\n");
                     $this->excluir($titulo, $autorNumEdicao, $editora);
                     return;
@@ -195,7 +230,10 @@ class Pessoa implements IBiblioteca{
             }
             if ($ML instanceof Revista) {
                 if ($ML->getTitulo() == $titulo && $ML->getNumEdicao() == $autorNumEdicao && $ML->getEditora() == $editora) {
-                    $this->emprestimo[] = $ML;
+                    $this->emprestimo[] = [
+                        'material' => $ML,
+                        'pessoa' => $pessoaDestino
+                    ];
                     print("A revista ".$titulo." da editora ".$editora." foi emprestada para ".$pessoaDestino." com sucesso.\n");
                     $this->excluir($titulo, $autorNumEdicao, $editora);
                     return;
@@ -216,7 +254,10 @@ class Pessoa implements IBiblioteca{
         foreach ($this->biblioteca as $key => $ML) {
             if ($ML instanceof Livro) {
                 if ($ML->getTitulo() == $titulo && $ML->getAutor() == $autorNumEdicao) {
-                    $this->doacao[] = $this->biblioteca[$key];
+                    $this->doacao[] = [
+                        'material' => $this->biblioteca[$key],
+                        'destino' => $instituicaoPessoaDestino
+                    ];
                     print("O livro ".$titulo." do autor ".$autorNumEdicao." foi doado para ".$instituicaoPessoaDestino." com sucesso.\n");
                     $this->excluir($titulo, $autorNumEdicao, $editora);
                     $materialEncontrado = true;
@@ -225,7 +266,10 @@ class Pessoa implements IBiblioteca{
             }
             if ($ML instanceof Gibi) {
                 if ($ML->getTitulo() == $titulo && $ML->getNumEdicao() == $autorNumEdicao) {
-                    $this->doacao[] = $this->biblioteca[$key];
+                    $this->doacao[] = [
+                        'material' => $this->biblioteca[$key],
+                        'destino' => $instituicaoPessoaDestino
+                    ];
                     print("O gibi ".$titulo." da edição ".$autorNumEdicao." foi doado para ".$instituicaoPessoaDestino." com sucesso.\n");
                     $materialEncontrado = true;
                     $this->excluir($titulo, $autorNumEdicao, $editora);
@@ -234,7 +278,10 @@ class Pessoa implements IBiblioteca{
             }
             if ($ML instanceof Revista) {
                 if ($ML->getTitulo() == $titulo && $ML->getNumEdicao() == $autorNumEdicao && $ML->getEditora() == $editora) {
-                    $this->doacao[] = $this->biblioteca[$key];
+                    $this->doacao[] = [
+                        'material' => $this->biblioteca[$key],
+                        'destino' => $instituicaoPessoaDestino
+                    ];
                     print("A revista ".$titulo." da editora ".$editora." foi doado para ".$instituicaoPessoaDestino." com sucesso.\n");
                     $materialEncontrado = true;
                     $this->excluir($titulo, $autorNumEdicao, $editora);
@@ -356,6 +403,16 @@ class Pessoa implements IBiblioteca{
         $this->telefone = $telefone;
 
         return $this;
+    }
+
+    
+
+    /**
+     * Get the value of biblioteca
+     */
+    public function getBiblioteca(): array
+    {
+        return $this->biblioteca;
     }
 }
 ?>

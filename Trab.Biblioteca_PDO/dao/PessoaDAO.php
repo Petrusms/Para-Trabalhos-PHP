@@ -1,61 +1,67 @@
-
 <?php
 require_once("IBiblioteca.php");
-class Pessoa implements IBiblioteca{
-    private string $nome;
-    private string $dataNascimento;
-    private string $CPF;
-    private string $telefone;
-    private string $senha;
+require_once("util/Conexao.php");
+require_once("modelo/Livro.php");
+require_once("modelo/Gibi.php");
+require_once("modelo/Revista.php");
+
+class PessoaDAO implements IBiblioteca{
     private array $biblioteca = [];
     private array $emprestimo = [];
     private array $doacao = [];
 
     public function adicionar($ML) {
-        $this->biblioteca[] = $ML;
+        $sql = "INSERT INTO Materiais_Leitura(tipo, titulo, anoPublicacao, categoria, numEdicao, editora, numPag, numCap)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+        $con = Conexao::getCon();
+        $stmt = $con->prepare($sql);
+        if($ML instanceof Livro){
+            $stmt->execute(array($ML->getTipo(), $ML->getTitulo(), $ML->getAnoPublicacao(),$ML->getCategoria(), null, null, $ML->getNumPagina(), $ML->getNumCapitulo()));
+        } else if($ML instanceof Gibi){
+            $stmt->execute(array($ML->getTipo(), $ML->getTitulo(), $ML->getAnoPublicacao(),$ML->getCategoria(), $ML->getNumEdicao(),null, null, null));
+        } else if ($ML instanceof Revista){
+            $stmt->execute(array($ML->getTipo(), $ML->getTitulo(), $ML->getAnoPublicacao(),$ML->getCategoria(), $ML->getNumEdicao(), $ML->getEditora(), null, null));
+        }
     }
 
-    public function listar(){
-        if (empty($this->biblioteca)) {
-            print("Nenhum material de leitura cadastrado.\n");
-            return;
-        }
+    public function listar() {
+        $sql = "SELECT * FROM   Materiais_Leitura";
+        $con = Conexao::getCon();
+
+        $stmt = $con->prepare($sql);
+        $stmt->execute();
+        $registros = $stmt->fetchAll();
         
-        $temML = false;
+        $materiais = $this->MapMateriais($registros);
+        if(count($materiais)>0){
+            return $materiais;
+        }else{
+            return null;
+        }
+    }
 
-        foreach ($this->biblioteca as $ML) {
-            if ($ML instanceof Livro) {
-                if (!$temML) {
-                    print("════════════════════════════════════════════════ LIVRO ══════════════════════════════════════════════\n");
-                    $temML = true;
-                }
-                print("Título: ".$ML->getTitulo()." | Autor: ".$ML->getAutor()->getNome()." | Gênero: ".$ML->getCategoria()."\n");
+    private function MapMateriais(array $registros) {
+        foreach ($registros as $reg) {
+            if ($reg['tipo'] == 'L') {
+                $material = new Livro();
+                $material->setNumPagina($reg['numPag']);
+                $material->setNumCapitulo($reg['numCap']);
+            } else if ($reg['tipo'] == 'G') {
+                $material = new Gibi();
+                $material->setNumEdicao($reg['numEdicao']);   
+            } else if ($reg['tipo'] == 'R') {
+                $material = new Revista();
+                $material->setNumEdicao($reg['numEdicao']);
+                $material->setEditora($reg['editora']);
             } 
+            $material->setId($reg['id']);
+            $material->setTitulo($reg['titulo']);
+            $material->setAnoPublicacao($reg['anoPublicacao']);
+            $material->setCategoria($reg['categoria']);
+            $materiais[] = $material;
         }
-
-        $temML = false;
-
-        foreach ($this->biblioteca as $ML) {
-            if ($ML instanceof Revista) {
-                if (!$temML) {
-                    print("════════════════════════════════════════════════ REVISTA ══════════════════════════════════════════════\n");
-                    $temML = true;
-                }
-                print("Título: " . $ML->getTitulo() . " | Número de edição: " . $ML->getNumEdicao()." | Editora: ".$ML->getEditora()." | Gênero: ".$ML->getCategoria()."\n");
-            } 
-        }
-        
-        $temML = false;
-
-        foreach ($this->biblioteca as $ML) {
-            if ($ML instanceof Gibi) {
-                if (!$temML) {
-                    print("════════════════════════════════════════════════ GIBI ══════════════════════════════════════════════\n");
-                    $temML = true;
-                }
-                print("Título: " . $ML->getTitulo() . " | Número de edição: " . $ML->getNumEdicao() . " | Gênero: ".$ML->getCategoria()."\n");
-            }
-        }
+        return $materiais;
     }
 
     public function listarEmprestimo() {
@@ -74,7 +80,7 @@ class Pessoa implements IBiblioteca{
                     print("════════════════════════════════════════════════ LIVRO ══════════════════════════════════════════════\n");
                     $temML = true;
                 }
-                print("O livro " . $material->getTitulo() . " do autor " . $material->getAutor()->getNome() . 
+                print("O livro " . $material->getTitulo() .
                     " do gênero: " . $material->getCategoria() . 
                     " foi emprestado para " . $ML['pessoa'] . "\n");
             } 
@@ -131,7 +137,7 @@ class Pessoa implements IBiblioteca{
                     print("════════════════════════════════════════════════ LIVRO ══════════════════════════════════════════════\n");
                     $temML = true;
                 }
-                print("O livro " . $material->getTitulo() . " do autor " . $material->getAutor()->getNome() . 
+                print("O livro " . $material->getTitulo() .
                     " do gênero: " . $material->getCategoria() . 
                     " foi emprestado para " . $ML['destino'] . "\n");
             } 
@@ -177,7 +183,7 @@ class Pessoa implements IBiblioteca{
     
         foreach ($this->biblioteca as $key => $ML) {
             if ($ML instanceof Livro) {
-                if ($ML->getTitulo() == $titulo && $ML->getAutor()->getNome() == $autorNumEdicao) {
+                if ($ML->getTitulo() == $titulo) {
                     array_splice($this->biblioteca, $key, 1);
                     return ["success" => true, "message" => "O livro " . $titulo . " foi excluído com sucesso.\n"];
                 }
@@ -207,7 +213,7 @@ class Pessoa implements IBiblioteca{
         
         foreach ($this->biblioteca as $key => $ML) {
             if ($ML instanceof Livro) {
-                if ($ML->getTitulo() == $titulo && $ML->getAutor()->getNome() == $autorNumEdicao) {
+                if ($ML->getTitulo() == $titulo) {
                     $this->emprestimo[] = [
                         'material' => $ML,
                         'pessoa' => $pessoaDestino
@@ -253,7 +259,7 @@ class Pessoa implements IBiblioteca{
             
         foreach ($this->biblioteca as $key => $ML) {
             if ($ML instanceof Livro) {
-                if ($ML->getTitulo() == $titulo && $ML->getAutor() == $autorNumEdicao) {
+                if ($ML->getTitulo() == $titulo) {
                     $this->doacao[] = [
                         'material' => $this->biblioteca[$key],
                         'destino' => $instituicaoPessoaDestino
@@ -292,127 +298,6 @@ class Pessoa implements IBiblioteca{
         if (!$materialEncontrado) {
             print("Material " . $titulo . " não encontrado na sua biblioteca.\n");
         }
-    }
-
-    public function __construct($a,$b,$c,$d,$e) {
-        $this->nome = $a;
-        $this->dataNascimento = $b;
-        $this->CPF = $c;
-        $this->telefone = $d;
-        $this->senha = $e;
-    }
-
-    public function __toString() {
-        return  "════════════════ DADOS DO USUÁRIO ═══════════════\n" .
-                "  Nome:            " . $this->getNome() . "\n" .
-                "  Data Nascimento: " . $this->getDataNascimento() . "\n" .
-                "  CPF:            " . $this->getCpf() . "\n" .
-                "  Telefone:       " . $this->getTelefone() . "\n" .
-                "  Senha:          " . str_repeat('*', strlen($this->getSenha())) . "\n" .
-                "  Quantidade de Materiais de leitura: " . count($this->biblioteca) . "\n" .
-                "══════════════════════════════════════════════════\n";
-                // strlen é uma função do php que conta o número de caracteres na string, incluindo espaços e caracteres especiais, onde o resultado é retornado como um número inteiro.
-                // str_repeat é uma função do php que repete uma string um determinado número de vezes, que nesse caso é o asterisco com o número que o strlen retorna/fornece.
-    }
-
-    /**
-     * Get the value of nome
-     */
-    public function getNome(): string
-    {
-        return $this->nome;
-    }
-
-    /**
-     * Set the value of nome
-     */
-    public function setNome(string $nome): self
-    {
-        $this->nome = $nome;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of dataNascimento
-     */
-    public function getDataNascimento(): string
-    {
-        return $this->dataNascimento;
-    }
-
-    /**
-     * Set the value of dataNascimento
-     */
-    public function setDataNascimento(string $dataNascimento): self
-    {
-        $this->dataNascimento = $dataNascimento;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of senha
-     */
-    public function getSenha(): string
-    {
-        return $this->senha;
-    }
-
-    /**
-     * Set the value of senha
-     */
-    public function setSenha(string $senha): self
-    {
-        $this->senha = $senha;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of CPF
-     */
-    public function getCPF(): string
-    {
-        return $this->CPF;
-    }
-
-    /**
-     * Set the value of CPF
-     */
-    public function setCPF(string $CPF): self
-    {
-        $this->CPF = $CPF;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of telefone
-     */
-    public function getTelefone(): string
-    {
-        return $this->telefone;
-    }
-
-    /**
-     * Set the value of telefone
-     */
-    public function setTelefone(string $telefone): self
-    {
-        $this->telefone = $telefone;
-
-        return $this;
-    }
-
-    
-
-    /**
-     * Get the value of biblioteca
-     */
-    public function getBiblioteca(): array
-    {
-        return $this->biblioteca;
     }
 }
 ?>

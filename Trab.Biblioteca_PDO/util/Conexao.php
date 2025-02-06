@@ -12,7 +12,7 @@ class Conexao{
                 //Define o tipo do retorno das consultas
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
                 ); 
-            $dadosCon="mysql:host=localhost:3306;dbname=clientes";
+            $dadosCon="mysql:host=localhost:3306;dbname=Biblioteca";
 
             self::$con = new PDO($dadosCon, "root", "bancodedados", $opcoes);
         }

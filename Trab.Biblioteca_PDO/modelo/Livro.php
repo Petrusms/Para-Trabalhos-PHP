@@ -1,10 +1,12 @@
 <?php
 require_once("MaterialLeitura.php");
-require_once("Autor.php");
 class Livro extends MaterialLeitura{
     private int $numPagina;  
-    private int $numCapitulo;
-    private Autor $autor;  
+    private int $numCapitulo; 
+
+    public function getTipo(){
+        return "L";
+    }
 
     /**
      * Get the value of numPagina
@@ -38,24 +40,6 @@ class Livro extends MaterialLeitura{
     public function setNumCapitulo(int $numCapitulo): self
     {
         $this->numCapitulo = $numCapitulo;
-
-        return $this;
-    }
-
-    /**
-     * Get the value of autor
-     */
-    public function getAutor(): autor
-    {
-        return $this->autor;
-    }
-
-    /**
-     * Set the value of autor
-     */
-    public function setAutor(autor $autor): self
-    {
-        $this->autor = $autor;
 
         return $this;
     }

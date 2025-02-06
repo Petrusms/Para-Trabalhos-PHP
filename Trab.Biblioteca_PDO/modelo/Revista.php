@@ -2,6 +2,10 @@
 require_once("Gibi.php");
 class Revista extends Gibi{
     private string $editora;
+
+    public function getTipo(){
+        return "R";
+    }
     
     /**
      * Get the value of editora

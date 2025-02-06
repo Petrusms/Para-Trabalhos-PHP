@@ -3,6 +3,10 @@ require_once("MaterialLeitura.php");
 class Gibi extends MaterialLeitura{
     protected int $numEdicao;
 
+    public function getTipo(){
+        return "G";
+    }
+
     /**
      * Get the value of numEdicao
      */

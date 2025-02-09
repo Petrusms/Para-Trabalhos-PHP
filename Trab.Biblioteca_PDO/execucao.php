@@ -12,15 +12,12 @@ $pessoa = new PessoaDao;
 function escrever($registros){
     if ($registros != null) {
         foreach($registros as $dados){
-            if($dados->getTipo == "L"){
-                print("Tipo: Livro | ID: {$dados->getId()} | Título: {$dados->getTitulo()} | Ano de Publicação: {$dados->getAnoPublicacao()} | 
-                Categoria: {$dados->getCategoria()} | Núm de Páginas: {$dados->getNumPagina()} | Núm de Capítulos: {$dados->getNumCapitulo()}\n");
-            } else if($dados->getTipo == "G"){
-                print("Tipo: Livro | ID: {$dados->getId()} | Título: {$dados->getTitulo()} | Ano de Publicação: {$dados->getAnoPublicacao()} |  
-                Edição Nº{$dados -> getNumEdicao()}\n");                                       
-            } else if($dados->getTipo == "R"){   
-                print("Tipo: Livro | ID: {$dados->getId()} | Título: {$dados->getTitulo()} | Ano de Publicação: {$dados->getAnoPublicacao()} |  
-                Edição Nº{$dados -> getNumEdicao()} | Editora: {$dados -> getEditora()}\n"); 
+            if($dados->getTipo() == "L"){
+                print("Tipo: Livro | ID: {$dados->getId()} | Título: {$dados->getTitulo()} | Ano de Publicação: {$dados->getAnoPublicacao()} | Categoria: {$dados->getCategoria()} | Núm de Páginas: {$dados->getNumPagina()} | Núm de Capítulos: {$dados->getNumCapitulo()}\n");
+            } else if($dados->getTipo() == "G"){
+                print("Tipo: Gibi | ID: {$dados->getId()} | Título: {$dados->getTitulo()} | Ano de Publicação: {$dados->getAnoPublicacao()} | Edição Nº{$dados -> getNumEdicao()}\n");                                       
+            } else if($dados->getTipo() == "R"){   
+                print("Tipo: Revista | ID: {$dados->getId()} | Título: {$dados->getTitulo()} | Ano de Publicação: {$dados->getAnoPublicacao()} | Edição Nº{$dados -> getNumEdicao()} | Editora: {$dados -> getEditora()}\n"); 
             } 
         }                   
     }                                 
@@ -31,9 +28,10 @@ function escrever($registros){
         print("║   Olá, seja bem-vindo à sua biblioteca, escolha uma das opções abaixo:     ║\n");
         print("║                                1: Inserir                                  ║\n");
         print("║                                2: Listar                                   ║\n");
-        print("║                                3: Excluir                                  ║\n");
-        print("║                                4: Emprestar                                ║\n");
-        print("║                                5: Doar                                     ║\n");
+        print("║                                3: Buscar                                   ║\n");
+        print("║                                4: Excluir                                  ║\n");
+        print("║                                5: Emprestar                                ║\n");
+        print("║                                6: Doar                                     ║\n");
         print("║                                0: Sair                                     ║\n");
         print("╚════════════════════════════════════════════════════════════════════════════╝\n");
     
@@ -92,7 +90,7 @@ function escrever($registros){
                 print("╠══════════════════════════════════════════════════════════════════════════════╣\n");
                 print("║                         Escolha uma das opções abaixo:                       ║\n");
                 print("║                                                                              ║\n");
-                print("║                                 1: Listar tudo                               ║\n");
+                print("║                                 1: Listar todos os materiais                 ║\n");
                 print("║                                 2: Listar empréstimos                        ║\n");
                 print("║                                 3: Listar doações                            ║\n");
                 print("╚══════════════════════════════════════════════════════════════════════════════╝\n");
@@ -107,10 +105,10 @@ function escrever($registros){
                         }
                         break;
                     case 2:
-                        $pessoa->listarEmprestimo();
+                        $pessoa->listarEmp();
                         break;
                     case 3:
-                        $pessoa->listarDoacao();
+                        $pessoa->listarDoa();
                         break;
                     default: 
                         print("╔════════════════!!!════════════════╗\n");
@@ -118,123 +116,61 @@ function escrever($registros){
                         print("╚═══════════════════════════════════╝\n");
                 }
                 break;
-    
             case 3:
-                print("╔═════════════════════════ EXCLUIR ═════════════════════╗\n");
-                print("║ Qual o tipo do material de leitura que será excluido: ║\n");
-                print("║                                                       ║\n");
-                print("║                       1: Livro                        ║\n");
-                print("║                       2: Gibi                         ║\n");
-                print("║                       3: Revista                      ║\n");
-                print("╚═══════════════════════════════════════════════════════╝\n");
-                $opcao = readline("");
-                switch($opcao){
-                    case 1:
-                        $titulo = readline("Qual o titulo do livro?");
-                        $autor = readline("Qual o nome do autor desse livro?");
-                        $resultado = $pessoa->excluir($titulo, $autor, null);
-                        print($resultado["message"]);
-                        break;
-
-                    case 2:
-                        $titulo = readline("Qual o titulo do gibi?");
-                        $numEdicao = readline("Qual o número de edição desse gibi?");
-                        $resultado = $pessoa->excluir( $titulo, $numEdicao, null);
-                        print($resultado["message"]);
-                        break;
-
-                    case 3:
-                        $titulo = readline("Qual o titulo da revista?");
-                        $numEdicao = readline("Qual o número de edição dessa revista?");
-                        $editora = readline("Qual a editora dessa revista?");
-                        $resultado = $pessoa->excluir( $titulo, $numEdicao, $editora);
-                        print($resultado["message"]);
-                        break;
-
-                    default: 
-                        print("╔════════════════!!!════════════════╗\n");
-                        print("║ Desculpe, mas a opção é invalida! ║\n");
-                        print("╚═══════════════════════════════════╝\n");
+                $id = readline("Informe o id do material de leitura: ");
+                $titulo = readline("Informe o título do material de leitura: ");
+                $registros = $pessoa->buscar($id, $titulo);
+                if(empty($registros)){
+                    print("Nenhum Material cadrastado!!\n");
+                }else{
+                    escrever($registros);
                 }
                 break;
-
             case 4:
-                print("╔══════════════════════════ EMPRESTAR ══════════════════════╗\n");
-                print("║  Qual o tipo do material de leitura que será emprestado:  ║\n");
-                print("║                                                           ║\n");
-                print("║                         1: Livro                          ║\n");
-                print("║                         2: Gibi                           ║\n");
-                print("║                         3: Revista                        ║\n");
-                print("╚═══════════════════════════════════════════════════════════╝\n");
-                $opcao = readline("");
-                switch($opcao){
-                    case 1:
-                        $titulo = readline("Qual o titulo do livro?");
-                        $autor = readline("Qual o nome do autor desse livro?");
-                        $pessoaDestino = readline("Para qual pessoa deseja/ira emprestar esse livro?");
-                        $pessoa->emprestar($titulo, $autor, null,$pessoaDestino);
-                        break;
-
-                    case 2:
-                        $titulo = readline("Qual o titulo do gibi?");
-                        $numEdicao = readline("Qual o número de edição desse gibi?");
-                        $pessoaDestino = readline("Para qual pessoa deseja/ira emprestar esse gibi?");
-                        $pessoa->emprestar($titulo, $numEdicao, null, $pessoaDestino);
-                        break;
-
-                    case 3:
-                        $titulo = readline("Qual o titulo da revista?");
-                        $numEdicao = readline("Qual o número de edição dessa revista?");
-                        $editora = readline("Qual a editora dessa revista?");
-                        $pessoaDestino = readline("Para qual pessoa deseja/ira emprestar essa revista?");
-                        $pessoa->emprestar($titulo, $numEdicao, $editora,$pessoaDestino);
-                        break;
-
-                    default: 
-                        print("╔════════════════!!!════════════════╗\n");
-                        print("║ Desculpe, mas a opção é invalida! ║\n");
-                        print("╚═══════════════════════════════════╝\n");
+                $registros = $pessoa->listar();
+                if(empty($registros)){
+                    print("Nenhum Material cadrastado!!\n");
+                }else{
+                    escrever($registros);
+    
+                    $id = readline("Informe o id do material de leitura: ");
+                    $titulo = readline("Informe o título do material de leitura: ");
+                    $registros = $pessoa->buscar($id, $titulo);
+                    if($registros!=null){
+                        $pessoa->excluir($id, $titulo);
+                        print("Material excluido.\n");
+                    }else{
+                        print("id ou título não encontrado.\n");
+                    }
                 }
                 break;
 
             case 5:
-                print("╔═════════════════════════ Doar ═════════════════════╗\n");
-                print("║ Qual o tipo do material de leitura que será doado: ║\n");
-                print("║                                                    ║\n");
-                print("║                      1: Livro                      ║\n");
-                print("║                      2: Gibi                       ║\n");
-                print("║                      3: Revista                    ║\n");
-                print("╚════════════════════════════════════════════════════╝\n");
-                $opcao = readline("");
-                switch($opcao){
-                    case 1:
-                        $titulo = readline("Qual o titulo do livro?");
-                        $autor = readline("Qual o nome do autor desse livro?");
-                        $instituicaoPessoaDestino = readline("Para qual pessoa/instituição deseja doar esse livro?");
-                        $pessoa->doar($titulo, $autor, null, $instituicaoPessoaDestino);
-                        break;
-
-                    case 2:
-                        $titulo = readline("Qual o titulo do gibi?");
-                        $numEdicao = readline("Qual o número de edição desse gibi?");
-                        $instituicaoPessoaDestino = readline("Para qual pessoa/instituição deseja doar esse gibi?");
-                        $pessoa->doar($titulo, $numEdicao, null, $instituicaoPessoaDestino);
-                        break;
-
-                    case 3:
-                        $titulo = readline("Qual o titulo da revista?");
-                        $numEdicao = readline("Qual o número de edição dessa revista?");
-                        $editora = readline("Qual a editora dessa revista?");
-                        $instituicaoPessoaDestino = readline("Para qual pessoa/instituição deseja doar essa revista?");
-                        $pessoa->doar($titulo, $numEdicao, $editora, $instituicaoPessoaDestino);
-                        break;
-
-                    default: 
-                        print("╔════════════════!!!════════════════╗\n");
-                        print("║ Desculpe, mas a opção é invalida! ║\n");
-                        print("╚═══════════════════════════════════╝\n");
+                $registros = $pessoa->listar();
+                if(empty($registros)){
+                    print("Nenhum Material cadrastado!!\n");
+                }else{
+                    escrever($registros);
+                $id = readline("Informe o id do material que será emprestado: ");
+                $titulo = readline("Informe o titulo do material que será emprestado: ");
+                $pessaoDestino = readline("Informe a pessoa que sera emprestado o material: ");
+                $pessoa->emprestar($id, $titulo, $pessaoDestino);
                 }
                 break;
+
+            case 6:
+                $registros = $pessoa->listar();
+                if(empty($registros)){
+                    print("Nenhum Material cadrastado!!\n");
+                }else{
+                    escrever($registros);
+                $id = readline("Informe o id do material que será doado: ");
+                $titulo = readline("Informe o titulo do material que será doado: ");
+                $pessaoDestino = readline("Informe a pessoa/Instituição que será doado o material: ");
+                $pessoa->doar($id, $titulo, $pessaoDestino);
+                }
+                break;
+
 
             case 0:
                 print("╔═════════════════════════╗\n");

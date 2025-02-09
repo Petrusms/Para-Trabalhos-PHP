@@ -1,9 +1,10 @@
 <?php
 interface IBiblioteca{
-    public function listar();
-    public function excluir($titulo, $autorNumEdicao, $editora);
     public function adicionar($ML);
-    public function emprestar($titulo, $autorNumEdicao, $editora,$pessoaDestino);
-    public function doar($titulo, $autorNumEdicao, $editora, $instituicaoPessoaDestino);
+    public function listar();
+    public function buscar($id, $titulo);
+    public function excluir($id, $titulo);
+    public function emprestar($id, $titulo, $pessoaDestino);
+    public function doar($id, $titulo, $instituicaoPessoaDestino);
 }
 ?>

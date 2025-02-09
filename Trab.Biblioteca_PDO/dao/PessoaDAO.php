@@ -6,9 +6,6 @@ require_once("modelo/Gibi.php");
 require_once("modelo/Revista.php");
 
 class PessoaDAO implements IBiblioteca{
-    private array $biblioteca = [];
-    private array $emprestimo = [];
-    private array $doacao = [];
 
     public function adicionar($ML) {
         $sql = "INSERT INTO Materiais_Leitura(tipo, titulo, anoPublicacao, categoria, numEdicao, editora, numPag, numCap)
@@ -41,7 +38,39 @@ class PessoaDAO implements IBiblioteca{
         }
     }
 
+    public function buscar($id, $titulo) {
+        $sql = "SELECT * FROM   Materiais_Leitura WHERE id = ? AND titulo = ?";
+        $con = Conexao::getCon();
+
+        $stmt = $con->prepare($sql);
+        $stmt->execute([$id, $titulo]);
+        $registros = $stmt->fetchAll();
+        
+        $materiais = $this->MapMateriais($registros);
+        if(count($materiais)>0){
+            return $materiais;
+        }else{
+            return null;
+        }
+    }
+    public function excluir($id, $titulo) {
+        $sql = "DELETE FROM Materiais_Leitura WHERE id = ? AND titulo = ?";
+        $con = Conexao::getCon();
+
+        $stmt = $con->prepare($sql);
+        $stmt->execute([$id, $titulo]);
+        $registros = $stmt->fetchAll();
+        
+        $materiais = $this->MapMateriais($registros);
+        if(count($materiais)>0){
+            return $materiais;
+        }else{
+            return null;
+        }
+    }
+
     private function MapMateriais(array $registros) {
+        $materiais = [];
         foreach ($registros as $reg) {
             if ($reg['tipo'] == 'L') {
                 $material = new Livro();
@@ -63,240 +92,70 @@ class PessoaDAO implements IBiblioteca{
         }
         return $materiais;
     }
+    public function listarEmp(){
+        $sql = "SELECT * FROM   Emprestimos";
+        $con = Conexao::getCon();
 
-    public function listarEmprestimo() {
-        if (empty($this->emprestimo)) {
-            print("Nenhum material de leitura foi emprestado.\n");
-            return;
-        }
-    
-        $temML = false;
-    
-        foreach ($this->emprestimo as $ML) {
-            $material = $ML['material'];
-    
-            if ($material instanceof Livro) {
-                if (!$temML) {
-                    print("════════════════════════════════════════════════ LIVRO ══════════════════════════════════════════════\n");
-                    $temML = true;
-                }
-                print("O livro " . $material->getTitulo() .
-                    " do gênero: " . $material->getCategoria() . 
-                    " foi emprestado para " . $ML['pessoa'] . "\n");
-            } 
-        }
-    
-        $temML = false;
-    
-        foreach ($this->emprestimo as $ML) {
-            $material = $ML['material'];
-    
-            if ($material instanceof Revista) {
-                if (!$temML) {
-                    print("════════════════════════════════════════════════ REVISTA ══════════════════════════════════════════════\n");
-                    $temML = true;
-                }
-                print("A revista " . $material->getTitulo() . 
-                    " da edição " . $material->getNumEdicao() . 
-                    " do gênero: " . $material->getCategoria() . 
-                    " da editora " . $material->getEditora() . 
-                    " foi emprestada para " . $ML['pessoa'] . "\n");
-            } 
-        }
-    
-        $temML = false;
-    
-        foreach ($this->emprestimo as $ML) {
-            $material = $ML['material'];
-    
-            if ($material instanceof Gibi) {
-                if (!$temML) {
-                    print("════════════════════════════════════════════════ GIBI ══════════════════════════════════════════════\n");
-                    $temML = true;
-                }
-                print("O gibi " . $material->getTitulo() . 
-                    " da edição " . $material->getNumEdicao() . 
-                    " do gênero: " . $material->getCategoria() . 
-                    " foi emprestado para " . $ML['pessoa'] . "\n");
-            }
-        }
-    }
-    public function listarDoacao(){
-        if (empty($this->doacao)) {
-            print("Nenhum material de leitura foi doado.\n");
-            return;
-        }
+        $stmt = $con->prepare($sql);
+        $stmt->execute();
+        $registros = $stmt->fetchAll();
         
-        $temML = false;
-
-        foreach ($this->doacao as $ML) {
-            $material = $ML['material'];
-
-            if ($material instanceof Livro) {
-                if (!$temML) {
-                    print("════════════════════════════════════════════════ LIVRO ══════════════════════════════════════════════\n");
-                    $temML = true;
-                }
-                print("O livro " . $material->getTitulo() .
-                    " do gênero: " . $material->getCategoria() . 
-                    " foi emprestado para " . $ML['destino'] . "\n");
-            } 
-        }
-
-        $temML = false;
-
-        foreach ($this->doacao as $ML) {
-            $material = $ML['material'];
-            if ($material instanceof Revista) {
-                if (!$temML) {
-                    print("════════════════════════════════════════════════ REVISTA ══════════════════════════════════════════════\n");
-                    $temML = true;
-                }
-                print("A revista " . $material->getTitulo() . 
-                " da edição " . $material->getNumEdicao() . 
-                " do gênero: " . $material->getCategoria() . 
-                " da editora " . $material->getEditora() . 
-                " foi emprestada para " . $ML['destino'] . "\n");
-            } 
-        }
-        $temML = false;
-
-        foreach ($this->doacao as $ML) {
-            $material = $ML['material'];
-            if ($material instanceof Gibi) {
-                if (!$temML) {
-                    print("════════════════════════════════════════════════ GIBI ══════════════════════════════════════════════\n");
-                    $temML = true;
-                }
-                print("O gibi " . $material->getTitulo() . 
-                    " da edição " . $material->getNumEdicao() . 
-                    " do gênero: " . $material->getCategoria() . 
-                    " foi emprestado para " . $ML['destino'] . "\n");
+        if(count($registros)>0){
+            foreach($registros as $registro){
+                print("ID do Empréstimo: {$registro['id']} | ID do Material: {$registro['material_id']} | Pessoa: {$registro['pessoa']} | Data do Empréstimo: {$registro['data_emprestimo']}\n");
             }
+        }else{
+            print("Nenhum empréstimo registrado!\n");
         }
     }
+    public function listarDoa(){
+        $sql = "SELECT * FROM   Doacoes";
+        $con = Conexao::getCon();
 
-    public function excluir($titulo, $autorNumEdicao, $editora) {
-        if (empty($this->biblioteca)) {
-            return ["success" => false, "message" => "Nenhum material de leitura cadastrado para ser excluído.\n"];
-        }
-    
-        foreach ($this->biblioteca as $key => $ML) {
-            if ($ML instanceof Livro) {
-                if ($ML->getTitulo() == $titulo) {
-                    array_splice($this->biblioteca, $key, 1);
-                    return ["success" => true, "message" => "O livro " . $titulo . " foi excluído com sucesso.\n"];
-                }
-            }
-            if ($ML instanceof Gibi) {
-                if ($ML->getTitulo() == $titulo && $ML->getNumEdicao() == $autorNumEdicao) {
-                    array_splice($this->biblioteca, $key, 1);
-                    return ["success" => true, "message" => "O gibi " . $titulo . " foi excluído com sucesso.\n"];
-                }
-            }
-            if ($ML instanceof Revista) {
-                if ($ML->getTitulo() == $titulo && $ML->getNumEdicao() == $autorNumEdicao && $ML->getEditora() == $editora) {
-                    array_splice($this->biblioteca, $key, 1);
-                    return ["success" => true, "message" => "A revista " . $titulo . " foi excluída com sucesso.\n"];
-                }
-            }
-        }
-        return ["success" => false, "message" => $titulo . " não encontrado.\n"];
-    }
-
-    public function emprestar($titulo, $autorNumEdicao, $editora, $pessoaDestino) {
-        if (empty($this->biblioteca)) {
-            print("Nenhum material de leitura cadastrado para ser emprestado.\n");
-            return;
-        }
-
+        $stmt = $con->prepare($sql);
+        $stmt->execute();
+        $registros = $stmt->fetchAll();
         
-        foreach ($this->biblioteca as $key => $ML) {
-            if ($ML instanceof Livro) {
-                if ($ML->getTitulo() == $titulo) {
-                    $this->emprestimo[] = [
-                        'material' => $ML,
-                        'pessoa' => $pessoaDestino
-                    ];
-                    print("O livro ".$titulo." do autor ".$autorNumEdicao . " foi emprestado para ".$pessoaDestino." com sucesso.\n");
-                    $this->excluir($titulo, $autorNumEdicao, $editora);
-                    return;
-                }
+        if(count($registros)>0){
+            foreach($registros as $registro){
+                print("ID da Doação: {$registro['id']} | ID do Material: {$registro['material_id']} | Pessoa/Instituição: {$registro['pessoa_instituicao']} | Data da Doação: {$registro['data_doacao']}\n");
             }
-            if ($ML instanceof Gibi) {
-                if ($ML->getTitulo() == $titulo && $ML->getNumEdicao() == $autorNumEdicao) {
-                    $this->emprestimo[] = [
-                        'material' => $ML,
-                        'pessoa' => $pessoaDestino
-                    ];
-                    print("O gibi ".$titulo." da edição " . $autorNumEdicao . " foi emprestado para ".$pessoaDestino." com sucesso.\n");
-                    $this->excluir($titulo, $autorNumEdicao, $editora);
-                    return;
-                }
-            }
-            if ($ML instanceof Revista) {
-                if ($ML->getTitulo() == $titulo && $ML->getNumEdicao() == $autorNumEdicao && $ML->getEditora() == $editora) {
-                    $this->emprestimo[] = [
-                        'material' => $ML,
-                        'pessoa' => $pessoaDestino
-                    ];
-                    print("A revista ".$titulo." da editora ".$editora." foi emprestada para ".$pessoaDestino." com sucesso.\n");
-                    $this->excluir($titulo, $autorNumEdicao, $editora);
-                    return;
-                }
-            }
+        }else{
+            print("Nenhuma doação registrada!\n");
         }
-        print("Material " . $titulo . " não encontrado na sua biblioteca.\n");
     }
+    public function emprestar($id, $titulo, $pessoaDestino)
+    {
+        $sql = "INSERT INTO Emprestimos (material_id, pessoa, data_emprestimo) VALUES (?, ?, ?)";
+        $con = Conexao::getCon();
+        $stmt = $con->prepare($sql);
 
-    public function doar($titulo, $autorNumEdicao, $editora, $instituicaoPessoaDestino) {
-        if (empty($this->biblioteca)) {
-            print("Nenhum material de leitura cadastrado para ser doado.\n");
-            return;
-        }
+        $material = $this->buscar($id, $titulo);
 
-        $materialEncontrado = false;
-            
-        foreach ($this->biblioteca as $key => $ML) {
-            if ($ML instanceof Livro) {
-                if ($ML->getTitulo() == $titulo) {
-                    $this->doacao[] = [
-                        'material' => $this->biblioteca[$key],
-                        'destino' => $instituicaoPessoaDestino
-                    ];
-                    print("O livro ".$titulo." do autor ".$autorNumEdicao." foi doado para ".$instituicaoPessoaDestino." com sucesso.\n");
-                    $this->excluir($titulo, $autorNumEdicao, $editora);
-                    $materialEncontrado = true;
-                    return;
-                }
-            }
-            if ($ML instanceof Gibi) {
-                if ($ML->getTitulo() == $titulo && $ML->getNumEdicao() == $autorNumEdicao) {
-                    $this->doacao[] = [
-                        'material' => $this->biblioteca[$key],
-                        'destino' => $instituicaoPessoaDestino
-                    ];
-                    print("O gibi ".$titulo." da edição ".$autorNumEdicao." foi doado para ".$instituicaoPessoaDestino." com sucesso.\n");
-                    $materialEncontrado = true;
-                    $this->excluir($titulo, $autorNumEdicao, $editora);
-                    return;
-                }
-            }
-            if ($ML instanceof Revista) {
-                if ($ML->getTitulo() == $titulo && $ML->getNumEdicao() == $autorNumEdicao && $ML->getEditora() == $editora) {
-                    $this->doacao[] = [
-                        'material' => $this->biblioteca[$key],
-                        'destino' => $instituicaoPessoaDestino
-                    ];
-                    print("A revista ".$titulo." da editora ".$editora." foi doado para ".$instituicaoPessoaDestino." com sucesso.\n");
-                    $materialEncontrado = true;
-                    $this->excluir($titulo, $autorNumEdicao, $editora);
-                    return;
-                }
-            }
+        if($material){
+            $data_emprestimo = date("Y-m-d");
+
+            $stmt->execute([$id, $pessoaDestino, $data_emprestimo]);
+            print("Material emprestado com sucesso para $pessoaDestino!\n");
+        } else {
+            print("Material com ID $id e título $titulo não encontrado.\n");
         }
-        if (!$materialEncontrado) {
-            print("Material " . $titulo . " não encontrado na sua biblioteca.\n");
+    }
+    public function doar($id, $titulo, $instituicaoPessoaDestino)
+    {
+        $sql = "INSERT INTO Doacoes (material_id, pessoa_instituicao, data_doacao) VALUES (?, ?, ?)";
+        $con = Conexao::getCon();
+        $stmt = $con->prepare($sql);
+
+        $material = $this->buscar($id, $titulo);
+
+        if($material){
+            $data_doacao = date("Y-m-d");
+
+            $stmt->execute([$id, $instituicaoPessoaDestino, $data_doacao]);
+            print("Material doado com sucesso para $instituicaoPessoaDestino!\n");
+        } else {
+            print("Material com ID $id e título $titulo não encontrado.\n");
         }
     }
 }

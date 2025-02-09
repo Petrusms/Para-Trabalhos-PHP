@@ -13,6 +13,21 @@ create table Materiais_Leitura(
     numCap int
 );
 
+CREATE TABLE Emprestimos (
+	id int auto_increment primary key not null,
+    material_id int,
+    pessoa varchar(255),
+    data_emprestimo date
+);
+
+CREATE TABLE Doacoes (
+	id int auto_increment primary key not null,
+    material_id int,
+    pessoa_instituicao varchar(255),
+    data_doacao date
+);
+
+
 -- Exemplos livros
 INSERT INTO Materiais_Leitura (tipo, titulo, anoPublicacao, categoria, numEdicao, editora, numPag, numCap) VALUES 
 ("L", "Dom Casmurro", 1899, "Romance", NULL, NULL, 320, 19),
@@ -37,6 +52,12 @@ INSERT INTO Materiais_Leitura (tipo, titulo, anoPublicacao, categoria, numEdicao
 ("R", "Claudia",2023,"Moda e Comportamento",1000,"Abril",NULL,NULL),
 ("R", "Rolling Stone",2023,"Música e Cultura Pop",200,"Rolling Stone",NULL,NULL);
 
-select * from Materiais_Leitura;
--- drop database Biblioteca;
+-- Exemplos doaçoes
+INSERT INTO Doacoes (material_id, pessoa_instituicao, data_doacao) VALUES (2, 'Escola Estadual', '2024-07-16'),
+(3, 'Lar dos Idosos', '2024-07-17');
 
+INSERT INTO Emprestimos (material_id, pessoa, data_emprestimo) VALUES (5, 'Ana Silva', '2024-07-16'),
+(12, 'Carlos Souza', '2024-07-17');
+
+-- select * from Materiais_Leitura;
+-- drop database Biblioteca;

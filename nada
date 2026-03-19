@@ -1,0 +1,33 @@
+<?php
+namespace app\database;
+
+use PDO;
+use PDOException;
+
+class ConnectionFactory{
+    private static ?PDO $connection = null;
+
+    public static function getConnection(){
+        if(self::$connection != null){
+            try{
+                $dsn = "mysql:host=".DB_HOST.";dbname=".DB_NAME.";charset=utf8";
+                self::$connection = new \PDO($dsn, DB_USER, DB_PASS);
+                self::$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                self::$connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            } catch(PDOException $e){
+                print("Erro ao conectar ao banco de dados: " . DB_NAME);
+                print("Erro: " . $e->getMessage());
+
+                $dsn = "mysql:host=".DB_HOST;
+                self::$connection = new \PDO($dsn, DB_USER, DB_PASS);
+                self::$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                self::$connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+
+                self::$connection->exec("CREATE DATABASE IF NOT EXISTS " . DB_NAME);
+                self::$connection->exec("USE " . DB_NAME);
+            }
+            
+        }
+        return self::$connection;
+    }
+}
